@@ -1,0 +1,184 @@
+﻿@page "/Radzenpie"
+@using System.Globalization
+@using Radzen.Blazor
+@using Radzen
+
+<div class="d-flex p-2 justify-content-start flex-wrap">
+
+    <div class="container">
+        <div class="row d-flex flex-wrap">
+            <div class="g-col-6 g-col-md-6" style="min-width:500px;max-width:550px">
+                <RadzenCard Class="w-100 mb-4" >
+                    <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                    <RadzenLabel Text="Show Data Labels" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenCard>
+                <h4>Pie series</h4>
+                <RadzenChart style="height: 400px" Class="mb-3">
+                    <RadzenPieSeries Data="@revenue2019" Title="Revenue" CategoryProperty="Quarter" ValueProperty="Revenue">
+                        <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                    </RadzenPieSeries>
+                </RadzenChart>
+            </div>
+            <div class="g-col-6 g-col-md-6" style="min-width:500px;max-width:550px">
+                <RadzenCard Class="w-100 mb-4" >
+                    <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+                    <RadzenLabel Text="Show Data Labels" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+                </RadzenCard>
+                <h4>Donut series</h4>
+                <RadzenChart style="height: 400px" Class="mb-3">
+                    <RadzenDonutSeries Data="@revenue2020" CategoryProperty="Quarter" ValueProperty="Revenue">
+                        <ChildContent>
+                            <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                        </ChildContent>
+                        <TitleTemplate>
+                            <div class="rz-donut-content">
+                                <div>Revenue</div> 
+                                <div>for 2020</div>
+                            </div>
+                        </TitleTemplate>
+                    </RadzenDonutSeries>
+                </RadzenChart>
+            </div>
+        </div>
+        <div class="row my-5">
+            <div class="g-col-6 g-col-md-6" style="min-width:500px;max-width:750px">
+                <RadzenCard Class="mt-4 w-100 mb-4 d-flex align-items-center" >
+                    <RadzenLabel Text="Color scheme:" Class="mt-3" Style="margin-right: 8px; vertical-align: middle;" />
+                    <RadzenDropDown Data="@colorSchemes" @bind-Value="@colorScheme" />
+                </RadzenCard>  
+                <RadzenChart ColorScheme="@colorScheme" style="height: 400px" Class="mb-3">
+                        @for (var year = 2013; year <= 2020; year++)
+                        {
+                            var currentYearRevenue = revenue.Where(r => r.Year == year).ToList();
+                            <RadzenColumnSeries Data="@currentYearRevenue" CategoryProperty="Quarter" Title="@year.ToString()" ValueProperty="Revenue" />
+                        }
+                    <RadzenColumnOptions Margin="0" />
+                    <RadzenValueAxis Formatter="@FormatAsUSD" />
+                </RadzenChart>
+            
+                <RadzenChart ColorScheme="@colorScheme" style="height: 300px" Class="mb-3">
+                    <RadzenPieSeries Data="@revenue.Where(r => r.Year == 2020)" Title="Revenue" CategoryProperty="Quarter" ValueProperty="Revenue" />
+                </RadzenChart>
+            </div>
+        </div>
+        <h4>Custom color series</h4>
+        <div class="row my-5">
+            <div class="col-sm-12">
+                <RadzenChart>
+                    <RadzenAreaSeries Stroke="rgb(236,72,127)" StrokeWidth="2" Fill="rgba(236,72,127,.5)" Data="@revenue.Where(r => r.Year == 2020)" CategoryProperty="Quarter" ValueProperty="Revenue">
+                        <ChildContent>
+                            <RadzenMarkers MarkerType="MarkerType.Circle" Fill="#fff" Stroke="rgba(236,72,127)" StrokeWidth="2" Size="8" />
+                        </ChildContent>
+                        <TooltipTemplate Context="data">
+                            Revenue for <span>@data.Quarter</span> 2020: <strong>@data.Revenue.ToString("C0", CultureInfo.CreateSpecificCulture("en-US"))</strong>
+                        </TooltipTemplate>
+                    </RadzenAreaSeries>
+                    <RadzenCategoryAxis>
+                        <RadzenGridLines Visible="true" Stroke="#ccc" LineType="LineType.Dashed" />
+                    </RadzenCategoryAxis>
+                    <RadzenValueAxis>
+                        <RadzenGridLines Visible="true" />
+                    </RadzenValueAxis>
+                    <RadzenChartTooltipOptions Style="border: 1px solid rgb(236,72,127); background: #eee; color: #000;" />
+                    <RadzenLegend Visible="false" />
+                </RadzenChart>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    bool showDataLabels = false;
+
+    IEnumerable<ColorScheme> colorSchemes = Enum.GetValues(typeof(ColorScheme)).Cast<ColorScheme>();
+    ColorScheme colorScheme = ColorScheme.Palette;
+
+    IList<DataItem> revenue = new List<DataItem>();
+
+    class DataItem
+    {
+        public int Year { get; set; }
+        public string Quarter { get; set; }
+        public double Revenue { get; set; }
+    }
+
+    class DataItem2
+    {
+        public string Date { get; set; }
+        public double Revenue { get; set; }
+    }
+
+    string FormatAsUSD(object value)
+    {
+        return ((double)value).ToString("C0", CultureInfo.CreateSpecificCulture("en-US"));
+    }
+
+    protected override void OnInitialized()
+    {
+        var random = new Random();
+
+        for (var year = 2013; year <= 2020; year++)
+        {
+            for (var quarter = 1; quarter <= 4; quarter++)
+            {
+                revenue.Add(new DataItem
+                    {
+                        Year = year,
+                        Quarter = $"Q{quarter}",
+                        Revenue = random.NextDouble() * 200000
+                    });
+            }
+        }
+    }
+
+    DataItem[] revenue2019 = new DataItem[]
+    {
+        new DataItem
+        {
+            Quarter = "Q1",
+            Revenue = 234000
+        },
+        new DataItem
+        {
+            Quarter = "Q2",
+            Revenue = 284000
+        },
+        new DataItem
+        {
+            Quarter = "Q3",
+            Revenue = 274000
+        },
+        new DataItem
+        {
+            Quarter = "Q4",
+            Revenue = 294000
+        },
+        };
+
+        DataItem[] revenue2020 = new DataItem[] {
+        new DataItem
+        {
+            Quarter = "Q1",
+            Revenue = 254000
+        },
+        new DataItem
+        {
+            Quarter = "Q2",
+            Revenue = 324000
+        },
+        new DataItem
+        {
+            Quarter = "Q3",
+            Revenue = 354000
+        },
+        new DataItem
+        {
+            Quarter = "Q4",
+            Revenue = 394000
+        },
+
+    };
+
+}

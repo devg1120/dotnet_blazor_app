@@ -1,0 +1,6 @@
+./appsettings.Development.json:  "urls": "http://*:5055;https://*:7055",
+          "AllowedHosts": "*"
+./appsettings.json:  "urls": "http://*:5055;https://*:7055",
+          "AllowedHosts": "*"
+./Properties/launchSettings.json:      "applicationUrl": "https://localhost:7055;http://localhost:
+

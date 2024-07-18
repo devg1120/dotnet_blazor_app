@@ -1,0 +1,8 @@
+
+
+cd Blazor.Diagrams/samples/ServerSide
+
+dotnet run
+
+https://127.0.0.1:7055/
+
