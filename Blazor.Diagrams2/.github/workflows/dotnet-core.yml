@@ -1,0 +1,44 @@
+name: .NET Core deploy to GitHub pages
+
+env:
+  dotnet_version: 8.0.x
+  project_name: "TestProject_ClientSide/TestProject_ClientSide.csproj"
+  base_href: /Blazor.Diagrams/
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.dotnet_version }}
+    - name: Install dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+    - name: Publish
+      run: dotnet publish ${{ env.project_name }} -c Release -o app/publish
+    - name: Rewrite base href
+      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+      with:
+        html_path: app/publish/wwwroot/index.html
+        base_href: ${{ env.base_href }}
+    - name: add .nojekyll
+      run: touch app/publish/wwwroot/.nojekyll
+    - name: write git commit id
+      run: echo -n "${GITHUB_SHA}" > app/publish/wwwroot/commit.txt
+    - name: Deploy to Github Pages
+      uses: JamesIves/github-pages-deploy-action@v4.6.3
+      with:
+        token: ${{ secrets.ACCESS_TOKEN }}
+        branch: gh-pages # The branch the action should deploy to.
+        folder: app/publish/wwwroot # The folder the action should deploy.
+        single-commit: true

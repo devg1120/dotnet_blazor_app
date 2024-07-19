@@ -1,0 +1,68 @@
+﻿@inherits FixedSizeNodeBase
+@using Excubo.Blazor.Diagrams.Extensions
+@if (Deleted || OffCanvas)
+{
+    return;
+}
+@using (var temporary_culture = new CultureSwapper())
+{
+    <g transform="@PositionAndScale">
+        <ellipse rx="@(Width / 2 * Math.Sqrt(2))"
+                 ry="@(Height / 2 * Math.Sqrt(2))"
+                 cx="@(Width / 2)"
+                 cy="@(Height / 2)"
+                 @onmouseover="OnNodeOver"
+                 @onmouseout="OnNodeOut"
+                 stroke="@Stroke"
+                 stroke-width="2px"
+                 fill="@Fill"
+                 cursor="@(Movable ? "move" : "default")"
+                 pointer-events="visiblepainted"
+                 style="@(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+    </g>
+}
+@code {
+    public override RenderFragment border =>@<text>
+        @using (var temporary_culture = new CultureSwapper())
+        {
+            <g transform="@PositionAndScale">
+                <ellipse rx="@(Width / 2 * Math.Sqrt(2))"
+                         ry="@(Height / 2 * Math.Sqrt(2))"
+                         cx="@(Width / 2)"
+                         cy="@(Height / 2)"
+                         stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                         stroke-width="@(.5 / Zoom)rem"
+                         fill="none"
+                         cursor="pointer"
+                         @onmouseover="OnBorderOver"
+                         @onmouseout="OnBorderOut" />
+            </g>
+        }
+    </text>;
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
+    {
+        return position switch
+        {
+            Position.North => ((Width / 2), (Height / 2 - (Height / 2 * Math.Sqrt(2)))),
+            Position.South => ((Width / 2), (Height / 2 + (Height / 2 * Math.Sqrt(2)))),
+            Position.East => ((Width / 2 + Width / 2 * Math.Sqrt(2)), (Height / 2)),
+            Position.West => ((Width / 2 - Width / 2 * Math.Sqrt(2)), (Height / 2)),
+            Position.NorthWest => (0, 0),
+            Position.SouthWest => (0, Height),
+            Position.NorthEast => (Width, 0),
+            Position.SouthEast => (Width, Height),
+            Position.Center => (Width / 2, Height / 2),
+            _ => (0, 0)
+        };
+    }
+    protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return ((Math.Sqrt(2) - 1) * GetWidth() / 2, (Math.Sqrt(2) - 1) * GetHeight() / 2, (Math.Sqrt(2) - 1) * GetWidth() / 2, (Math.Sqrt(2) - 1) * GetHeight() / 2);
+    }
+    protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
+    {
+        await context.Paths.BeginPathAsync();
+        await context.Paths.EllipseAsync(X + GetWidth() / 2, Y + GetHeight() / 2, GetWidth() / 2 * Math.Sqrt(2), GetHeight() / 2 * Math.Sqrt(2), 0, 0, 360);
+        await context.DrawingPaths.FillAsync(Canvas.FillRule.NonZero);
+    }
+}

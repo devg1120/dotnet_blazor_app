@@ -1,0 +1,79 @@
+﻿@inherits ContentSizedNodeBase
+@using Excubo.Blazor.Diagrams.Extensions
+@if (Deleted || OffCanvas)
+{
+    return;
+}
+@using (var temporary_culture = new CultureSwapper())
+{
+    <g transform="@PositionAndScale">
+        <polygon points="
+                    @(Width / 2),@(-Height/2)
+                    @(Width),0
+                    @(Width*1.5),@(Height/2)
+                    @(Width),@(Height)
+                    @(Width / 2),@(Height*1.5)
+                    0,@(Height)
+                    @(-Width / 2),@(Height / 2)"
+                 @onmouseover="OnNodeOver"
+                 @onmouseout="OnNodeOut"
+                 stroke="@Stroke"
+                 stroke-width="2px"
+                 cursor="@(Movable ? "move" : "default")"
+                 fill="@Fill"
+                 style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+    </g>
+}
+@code {
+    public override RenderFragment border =>@<text>
+        @using (var temporary_culture = new CultureSwapper())
+        {
+            <g transform="@PositionAndScale">
+                <polygon points="
+                            @(Width / 2),@(-Height/2)
+                            @(Width),0
+                            @(Width*1.5),@(Height/2)
+                            @(Width),@(Height)
+                            @(Width / 2),@(Height*1.5)
+                            0,@(Height)
+                            @(-Width/2),@(Height / 2)"
+                         style="@(Hidden ? "display:none" : "")"
+                         stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                         stroke-width="@(.5 / Zoom)rem"
+                         fill="none"
+                         cursor="pointer"
+                         @onmouseover="OnBorderOver"
+                         @onmouseout="OnBorderOut" />
+            </g>
+        }
+    </text>;
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
+    {
+        return position switch
+        {
+            Position.North => (Width / 2, -Height / 2),
+            Position.NorthEast => (Width, 0),
+            Position.East => (Width * 1.5, Height / 2),
+            Position.SouthEast => (Width, Height),
+            Position.South => (Width / 2, Height * 1.5),
+            Position.SouthWest => (0, Height),
+            Position.NorthWest => (0, 0),
+            Position.West => (-Width / 2, Height / 2),
+            Position.Center => (Width / 2, Height / 2),
+            _ => (0, 0)
+        };
+    }
+    protected internal override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return (GetWidth() / 2, GetHeight() / 2, GetWidth() / 2, GetHeight() / 2);
+    }
+    protected internal override async Task DrawShapeAsync(IContext2DWithoutGetters context)
+    {
+        await context.Paths.BeginPathAsync();
+        await context.Paths.MoveToAsync(X + GetWidth() * 0.5, Y - GetHeight() * 0.5);
+        await context.Paths.LineToAsync(X + GetWidth() * 1.5, Y + GetHeight() * 0.5);
+        await context.Paths.LineToAsync(X + GetWidth() * 0.5, Y + GetHeight() * 1.5);
+        await context.Paths.LineToAsync(X - GetWidth() * 0.5, Y + GetHeight() * 0.5);
+        await context.DrawingPaths.FillAsync(Canvas.FillRule.NonZero);
+    }
+}

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Excubo.Blazor.Grids" Version="3.1.43" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Diagram\Blazor.Diagrams.csproj" />
+  </ItemGroup>
+</Project>

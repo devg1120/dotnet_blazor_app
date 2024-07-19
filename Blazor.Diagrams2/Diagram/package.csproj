@@ -1,0 +1,40 @@
+<Project>
+  <!--Title, Description, Tags, Product-->
+  <PropertyGroup>
+    <Title>Diagram component library for Blazor</Title>
+    <Description>Excubo.Blazor.Diagrams is a Blazor component library for a lightweight and highly customizable diagram component.</Description>
+    <PackageTags>blazor,html,diagram,flowchart</PackageTags>
+    <Product>Excubo.Blazor.Diagrams</Product>
+  </PropertyGroup>
+  <!--Author, Company-->
+  <PropertyGroup>
+    <Authors>Stefan Lörwald</Authors>
+    <Company>excubo ag</Company>
+  </PropertyGroup>
+  <!--Repository-->
+  <PropertyGroup>
+    <PackageProjectUrl>https://github.com/excubo-ag/Blazor.Diagrams</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/excubo-ag/Blazor.Diagrams</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <!--PackageId, Version-->
+  <PropertyGroup>
+    <PackageId>Excubo.Blazor.Diagrams</PackageId>
+    <Version>4.1.67</Version>
+  </PropertyGroup>
+  <!--Self Include-->
+  <ItemGroup>
+    <None Include="package.csproj" />
+  </ItemGroup>
+  <!--Licensing-->
+  <PropertyGroup>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>
+      </PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

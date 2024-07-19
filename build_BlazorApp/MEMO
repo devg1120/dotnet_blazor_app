@@ -1,0 +1,18 @@
+
+# dotnet --list-sdks
+
+# dotnet new list
+Blazor Server App                             blazorserver                [C#]        Web/Blazor                    
+Blazor Web App                                blazor                      [C#]        Web/Blazor/WebAssembly        
+Blazor WebAssembly Standalone App             blazorwasm                  [C#]        Web/Blazor/WebAssembly/PWA   
+
+
+https://learn.microsoft.com/ja-jp/training/modules/build-your-first-blazor-web-app/3-exercise-configure-environment?pivots=vscode
+
+# dotnet new blazor -o BlazorApp
+
+# dotnet new blazorserver  -o BlazorServer
+
+# dotnet new razorcomponent
+
+

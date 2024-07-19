@@ -1,0 +1,6 @@
+cd TestProject_ServerSide
+
+dotnet run
+
+
+

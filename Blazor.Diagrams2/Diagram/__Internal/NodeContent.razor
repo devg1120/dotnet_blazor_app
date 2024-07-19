@@ -1,0 +1,22 @@
+﻿@using Excubo.Blazor.Diagrams.Extensions
+
+@using (var temporary_culture = new CultureSwapper())
+{
+    <div class="@Node.ContentClasses"
+         style="@Node.ContentStyle;
+                position: absolute;
+                left: @(Node.Zoom * Node.X)px;
+                top: @(Node.Zoom * Node.Y)px;
+                pointer-events: none;
+                transform: scale(@Node.Zoom);
+                transform-origin: 0 0;"
+         @ref="element">
+        @using (var suspension = temporary_culture.Suspend())
+        {
+            @ChildContent
+        }
+    </div>
+}
+@code {
+    private ElementReference element;
+}

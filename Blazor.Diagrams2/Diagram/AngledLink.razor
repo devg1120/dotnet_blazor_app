@@ -1,0 +1,100 @@
+﻿@inherits LinkBase
+@using Excubo.Blazor.Diagrams.Extensions
+@if (Deleted)
+{
+    return;
+}
+@using (var temporary_culture = new CultureSwapper())
+{
+    <g transform="scale(@Zoom)">
+        @if (ControlPoints.Count == 3)
+        {
+            var arrow_size = ArrowSize ?? Width * 2;
+            var right_arrow_tip_coordinates = $"{arrow_size * 2 / 3},-{arrow_size}";
+            var left_arrow_tip_coordinates = " -" + right_arrow_tip_coordinates;
+            var width = Math.Abs(ControlPoints[2].X - ControlPoints[0].X);
+            var height = Math.Abs(ControlPoints[2].Y - ControlPoints[0].Y);
+            var down_first = (width < height);
+            var first_point_x = (down_first) ? (ControlPoints[0].X) : (ControlPoints[1].X);
+            var first_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[0].Y);
+            var second_point_x = (down_first) ? (ControlPoints[2].X) : (ControlPoints[1].X);
+            var second_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[2].Y);
+            var start_angle = Math.Atan2(first_point_y - ControlPoints[0].Y, first_point_x - ControlPoints[0].X);
+            var start_x = Arrow == Arrow.Both ? 6 * Math.Cos(start_angle) : 0;
+            var start_y = Arrow == Arrow.Both ? 6 * Math.Sin(start_angle) : 0;
+            var end_angle = Math.Atan2(second_point_y - ControlPoints[2].Y, second_point_x - ControlPoints[2].X);
+            var end_x = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? arrow_size * Math.Cos(end_angle) : 0;
+            var end_y = (Arrow == Arrow.Target || Arrow == Arrow.Both) ? arrow_size * Math.Sin(end_angle) : 0;
+            <path d="M @(ControlPoints[0].X + start_x) @(ControlPoints[0].Y + start_y)
+                     L @(first_point_x) @(first_point_y)
+                     L @(second_point_x) @(second_point_y)
+                     L @(ControlPoints[2].X + end_x) @(ControlPoints[2].Y + end_y)"
+                  class="@Class"
+                  style="@Style"
+                  stroke-width="@Width"
+                  fill="none"
+                  stroke="@Color"
+                  cursor="pointer"
+                  @onmouseover="OnLinkOver"
+                  @onmouseout="OnLinkOut"
+                  @attributes="other_attributes"/>
+            var arrow_shape = "0,0 " + right_arrow_tip_coordinates + left_arrow_tip_coordinates;
+            if (Arrow == Arrow.Both || Arrow == Arrow.Target)
+            {
+                var cp = ControlPoints.Last();
+                var angle = Math.Atan2(second_point_y - cp.Y, second_point_x - cp.X) * 180 / Math.PI + 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="@arrow_shape" fill="@Color" />
+                </g>
+            }
+            if (Arrow == Arrow.Both)
+            {
+                var cp = ControlPoints.First();
+                var angle = Math.Atan2(first_point_y - cp.Y, first_point_x - cp.X) * 180 / Math.PI + 90;
+                <g transform="translate(@(cp.X) @(cp.Y)) rotate(@(angle))">
+                    <polygon points="@arrow_shape" fill="@Color" />
+                </g>
+            }
+            if (Selected)
+            {
+                foreach (var cp in ControlPoints)
+                {
+                    <ellipse cx="@cp.X" cy="@cp.Y" rx="@(Width * 2)" ry="@(Width * 2)" fill="green" @onmouseover="cp.OnMouseOver" @onmouseout="@cp.OnMouseOut" cursor="move" />
+                }
+            }
+        }
+    </g>
+}
+@code {
+    private (double X, double Y) GetMiddlePoint()
+    {
+        return ((Source.X + Target.X) / 2, (Source.Y + Target.Y) / 2);
+    }
+    protected override void OnParametersSet()
+    {
+        if (ControlPointMethods == null)
+        {
+            ControlPointMethods = new List<Func<(double X, double Y)>>
+    {
+                GetMiddlePoint
+            };
+        }
+        base.OnParametersSet();
+    }
+    protected internal override async Task DrawPathAsync(IContext2DWithoutGetters ctx)
+    {
+        var width = Math.Abs(ControlPoints[2].X - ControlPoints[0].X);
+        var height = Math.Abs(ControlPoints[2].Y - ControlPoints[0].Y);
+        var down_first = (width < height);
+        var first_point_x = (down_first) ? (ControlPoints[0].X) : (ControlPoints[1].X);
+        var first_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[0].Y);
+        var second_point_x = (down_first) ? (ControlPoints[2].X) : (ControlPoints[1].X);
+        var second_point_y = (down_first) ? (ControlPoints[1].Y) : (ControlPoints[2].Y);
+        await ctx.Paths.BeginPathAsync();
+        await ctx.Paths.MoveToAsync(ControlPoints[0].X, ControlPoints[0].Y);
+        await ctx.Paths.LineToAsync(first_point_x, first_point_y);
+        await ctx.Paths.LineToAsync(second_point_x, second_point_y);
+        await ctx.Paths.LineToAsync(ControlPoints[2].X, ControlPoints[2].Y);
+        await ctx.DrawingPaths.StrokeAsync();
+    }
+}

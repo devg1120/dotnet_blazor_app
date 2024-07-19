@@ -1,0 +1,13 @@
+﻿@using Excubo.Blazor.Diagrams.__Internal 
+
+<CascadingValue Value="@this" IsFixed="true">
+    <!--user provided links-->
+    @ChildContent
+    <!--dynamically generated links-->
+    <GeneratedLinks Links="@internally_generated_links" @ref="generated_links_ref" />
+</CascadingValue>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    private GeneratedLinks generated_links_ref;
+}

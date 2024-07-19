@@ -1,0 +1,95 @@
+﻿<!--
+Either inherit from ContentSizedNodeBase or FixedSizeNodeBase.
+When choosing fixed size, the node will have parameters for explicitly setting width and height.
+Otherwise, the width and height will be determined by the size of the content.
+-->
+@inherits ContentSizedNodeBase
+<!--This is important to prohibit rendering of deleted, user-provided nodes.-->
+@if (Deleted || OffCanvas)
+{
+    return;
+}
+@using Excubo.Blazor.Diagrams.Extensions
+<!--This using statement helps with locales that do not have the period as decimal separator: The DOM expects the period as decimal separator.-->
+@using (var temporary_culture = new CultureSwapper())
+{
+    <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
+    <g transform="@PositionAndScale">
+        <!--Beginning of the customizable part-->
+        <!--This defines the area which can be interacted with to select/move the node. -->
+        <!--Mandatory: onmouseover="OnNodeOver" and onmouseout="OnNodeOut" -->
+        <!--ContentSizedNodeBase only: use style="@(Hidden? "display:none" : "") ..." to hide the node until the correct size has been determined-->
+        <!--FixedSizeNodeBase: remove @(Hidden? "display:none" : "") from the style-->
+        <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
+              @onmouseover="OnNodeOver"
+              @onmouseout="OnNodeOut"
+              stroke="@Stroke"
+              stroke-width="2px"
+              fill="@Fill"
+              cursor="@(Movable ? "move" : "default")"
+              style="@(Hidden? "display:none;" : "") @(Selected ? "stroke-dasharray: 8 2; animation: diagram-node-selected 0.4s ease infinite;" : "")" />
+        <!--End of the customizable part-->
+    </g>
+}
+@code {
+    @*This part is essentially the same as the node above, except it's just the border. This is where links can be connected to. This does not need to be equivalent to the border, but can be any shape.*@
+    public override RenderFragment border =>@<text>
+        @using (var temporary_culture = new CultureSwapper())
+        {
+            <!--The outer g is mandatory (takes care of scaling and correct placement for you)-->
+            <g transform="@PositionAndScale">
+                <!--Beginning of the customizable part-->
+                <!--This defines the area which can be interacted with to create links To debug this, set the stroke to a visible color. fill is set to none so that only the border is interactive -->
+                <!--Mandatory: onmouseover="OnBorderOver" and onmouseout="OnBorderOut" -->
+                <!--ContentSizedNodeBase only: use style="@(Hidden? "display:none" : "")" to hide the border until the correct size has been determined-->
+                <!--FixedSizeNodeBase: remove @(Hidden? "display:none" : "") from the style-->
+                <polygon points="0,0 @(Width / 2),-10 @(Width),0 @(Width + 10),@(Height / 2) @(Width),@(Height) @(Width / 2),@(Height + 10) 0,@(Height) -10,@(Height / 2)"
+                      style="@(Hidden? "display:none" : "")"
+                      stroke="@(Hovered ? "#DDDDDD7F" : "transparent")"
+                      stroke-width="@(.5 / Zoom)rem"
+                      fill="none"
+                      cursor="pointer"
+                      @onmouseover="OnBorderOver"
+                      @onmouseout="OnBorderOut" />
+                <!--End of the customizable part-->
+            </g>
+        }
+    </text>;
+    @*This is optional, but if you want to define some default port, this is how you do it. Defaults to (0, 0).*@
+    public override (double RelativeX, double RelativeY) GetDefaultPort(Position position = Position.Any)
+    {
+        return position switch
+        {
+            Position.NorthWest => (0, 0),
+            Position.North => (Width / 2, -10),
+            Position.NorthEast => (Width, 0),
+            Position.East => (Width + 10, Height / 2),
+            Position.SouthEast => (Width, Height),
+            Position.South => (Width / 2, Height + 10),
+            Position.SouthWest => (0, Height),
+            Position.West => (-10, Height / 2),
+            _ => (0, 0)
+        };
+    }
+    @*The shape drawn might be larger than the rectangle from the X,Y position as top left corner with its width and height.
+      The margins here (positive if the shape is larger than the rectangle) help draw the node correctly in the node library.
+      There's no need to override this, if it's (0, 0, 0, 0).*@
+    protected override (double Left, double Top, double Right, double Bottom) GetDrawingMargins()
+    {
+        return (0, 0, 0, 0);
+    }
+    protected override async Task DrawShapeAsync(Excubo.Blazor.Canvas.Contexts.IContext2DWithoutGetters ctx)
+    {
+        await ctx.Paths.BeginPathAsync();
+        await ctx.Paths.MoveToAsync(X, Y);
+        await ctx.Paths.LineToAsync(X + Width / 2, Y - 10);
+        await ctx.Paths.LineToAsync(X + Width, Y);
+        await ctx.Paths.LineToAsync(X + Width + 10, Y + Height / 2);
+        await ctx.Paths.LineToAsync(X + Width, Y + Height);
+        await ctx.Paths.LineToAsync(X + Width / 2, Y + Height + 10);
+        await ctx.Paths.LineToAsync(X, Y + Height);
+        await ctx.Paths.LineToAsync(X - 10, Y + Height / 2);
+        await ctx.Paths.LineToAsync(X, Y);
+        await ctx.DrawingPaths.FillAsync(Excubo.Blazor.Canvas.FillRule.NonZero);
+    }
+}
