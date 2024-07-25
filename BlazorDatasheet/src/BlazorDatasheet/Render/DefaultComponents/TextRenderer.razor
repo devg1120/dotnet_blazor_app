@@ -1,0 +1,18 @@
+@namespace BlazorDatasheet.Render.DefaultComponents
+@using System.Text
+@inherits BaseRenderer
+
+<div class="cell-renderer" title="@(ValueText)">
+    @(ValueText)
+</div>
+
+@code{
+
+    public string ValueText { get; set; }
+    protected override void OnParametersSet()
+    {
+        ValueText = Cell.Value?.ToString() ?? string.Empty;
+        base.OnParametersSet();
+    }
+
+}

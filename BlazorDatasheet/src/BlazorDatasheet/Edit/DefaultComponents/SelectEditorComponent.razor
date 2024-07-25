@@ -1,0 +1,131 @@
+@using BlazorDatasheet.Util
+@using BlazorDatasheet.Core.Util
+@using BlazorDatasheet.Core.Interfaces
+@using BlazorDatasheet.Core.Data
+@using BlazorDatasheet.Core.Edit
+@using BlazorDatasheet.Core.Validation
+@inherits BaseEditor
+
+<input @bind="CurrentValue"
+       @bind:event="oninput"
+       class="text-input"
+       style="@Style"
+       @ref="InputRef"/>
+<div class="select-list">
+    @foreach (var val in values)
+    {
+        <div class="select-item @(val.Equals(currentSelected) ? "active" : "")"
+             @onmouseup="() => selectItem(val)">
+            @val
+        </div>
+    }
+</div>
+
+@code {
+
+    private string[] values = Array.Empty<string>();
+
+    private IReadOnlyCell Cell;
+
+    string? currentSelected;
+
+    public override void BeforeEdit(IReadOnlyCell cell, Sheet sheet)
+    {
+        Cell = cell;
+
+        foreach (var validator in sheet.Validators.Get(cell.Row, cell.Col))
+            if (validator is SourceValidator)
+            {
+                values = ((SourceValidator)validator).ValidationSource.ToArray();
+                break;
+            }
+    }
+
+    public override void BeginEdit(EditEntryMode entryMode, string? editValue, string key)
+    {
+        if (entryMode == EditEntryMode.Mouse)
+        {
+            CurrentValue = editValue.ToString();
+        }
+        else if (entryMode == EditEntryMode.Key)
+        {
+            if (values.Any())
+            {
+                var keyUpped = key.ToUpperInvariant();
+                currentSelected = values.FirstOrDefault(v => v.ToUpperInvariant().StartsWith(keyUpped));
+            }
+
+            if (!string.IsNullOrWhiteSpace(currentSelected))
+            {
+                CurrentValue = currentSelected;
+            }
+            else
+            {
+                CurrentValue = key;
+            }
+        }
+
+        if (CurrentValue == null)
+            CurrentValue = string.Empty;
+    }
+
+    public override bool HandleKey(string key, bool ctrlKey, bool shiftKey, bool altKey, bool metaKey)
+    {
+        if (KeyUtil.IsEnter(key))
+        {
+            if (!string.IsNullOrWhiteSpace(currentSelected))
+            {
+                selectItem(currentSelected);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        if (KeyUtil.IsKeyDown(key))
+        {
+            hoverItem(1);
+            return true;
+        }
+
+        if (KeyUtil.IsKeyUp(key))
+        {
+            hoverItem(-1);
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(CurrentValue))
+        {
+            var keyUpped = CurrentValue.ToUpperInvariant();
+            currentSelected = values.FirstOrDefault(v => v.ToUpperInvariant().StartsWith(keyUpped));
+
+            if (!string.IsNullOrWhiteSpace(currentSelected))
+            {
+                StateHasChanged();
+                return true;
+            }
+        }
+
+        return base.HandleKey(key, ctrlKey, shiftKey, altKey, metaKey);
+    }
+
+    void hoverItem(int direction)
+    {
+        var index = !string.IsNullOrWhiteSpace(currentSelected) ? Array.IndexOf(values, currentSelected) : 0;
+
+        index = direction > 0 ? Math.Min(index + 1, values.Length - 1) : Math.Max(index - 1, 0);
+
+        currentSelected = values[index];
+
+        StateHasChanged();
+    }
+
+    void selectItem(string item)
+    {
+        CurrentValue = item;
+        AcceptEdit();
+    }
+
+}

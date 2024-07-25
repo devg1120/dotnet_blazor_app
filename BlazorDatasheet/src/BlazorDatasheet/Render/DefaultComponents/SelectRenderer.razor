@@ -1,0 +1,19 @@
+@namespace BlazorDatasheet.Render.DefaultComponents
+@using BlazorDatasheet.Core.Edit
+@inherits BaseRenderer
+
+<div style="display: flex; flex-direction: row; justify-content: space-between; width:100%;">
+    <div style="overflow: hidden;">
+        @(Cell.Value?.ToString())
+    </div>
+    <CaretButton OnClick="BeginEdit"/>
+</div>
+
+@code {
+
+    private void BeginEdit()
+    {
+        Sheet.Editor.BeginEdit(Cell.Row, Cell.Col, true, EditEntryMode.Mouse);
+    }
+
+}

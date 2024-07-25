@@ -1,0 +1,35 @@
+
+https://dotnet.microsoft.com/ja-jp/learn/aspnet/blazor-tutorial/create
+
+
+# dotnet --version
+8.0.107
+
+# dotnet new blazor -o BlazorApp
+
+# cd BlazorApp
+
+
+# vi ./appsettings.Development.json
+
+  "urls": "http://*:5055;https://*:7055",
+  "AllowedHosts": "*",
+
+# vi ./appsettings.json
+
+  "urls": "http://*:5055;https://*:7055",
+  "AllowedHosts": "*",
+
+# vi ./Properties/launchSettings.json
+
+  "profiles": {
+      "applicationUrl": "https://localhost:7055;http://localhost:5055",
+
+
+# dotnet run   //  dotnet watch
+#
+open browser
+https://127.0.0.1:7055/
+
+
+

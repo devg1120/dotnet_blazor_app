@@ -1,0 +1,260 @@
+@page "/"
+@using BlazorDatasheet.DataStructures.Geometry
+@using BlazorDatasheet.Edit
+@using BlazorDatasheet.Render
+@using BlazorDatasheet.SharedPages.Data
+@using BlazorDatasheet.Core.Data
+@using BlazorDatasheet.Core.Edit
+@using BlazorDatasheet.Core.Formats
+@using BlazorDatasheet.Core.Formats.DefaultConditionalFormats
+@using BlazorDatasheet.Core.Validation
+@using System.Drawing
+@using BlazorDatasheet.Core.Commands
+@using BlazorDatasheet.Core.Commands.Data
+@using BlazorDatasheet.Core.Commands.RowCols
+
+<PageTitle>Index</PageTitle>
+
+<p>
+    Blazor DataSheet is an excel-like editor for cellular values. Below shows some of the features of the data sheet. Sample code is available on <a href="https://github.com/anmcgrath/BlazorDatasheet">GitHub</a>
+</p>
+
+<div style="overflow-y: auto; overflow-x: scroll; max-height: 500px; max-width: 800px;">
+    <Datasheet
+        @ref="_datasheet"
+        Theme="@Theme"
+        Sheet="Sheet"
+        Virtualise="true"
+        ShowFormulaDependents="@ShowFormulaDependents"
+        ShowColHeadings="true"
+        ShowRowHeadings="true"
+        StickyHeadings="true">
+    </Datasheet>
+</div>
+
+<div>
+    <button @onclick="InsertRowAfterSelection">Insert row</button>
+    <button @onclick="InsertColAfterSelection">Insert col</button>
+    <button @onclick="RemoveCol">RemoveCol</button>
+    <button @onclick="RemoveRow">RemoveRow</button>
+    <button @onclick="() => Sheet.Commands.Undo()">Undo</button>
+    <button @onclick="() => Sheet.Commands.Redo()">Redo</button>
+    <button @onclick="@(() => Sheet.Selection.Value = "Bob")">Set to Bob</button>
+    <button @onclick="@(() => Sheet.SetFormat(Sheet.Selection.Regions, new CellFormat() { BackgroundColor = "red" }))">Set bg to red</button>
+    <button @onclick="@(() => Sheet.SetFormat(Sheet.Selection.Regions, new CellFormat() { BackgroundColor = "blue" }))">Set bg to blue</button>
+    <button @onclick="@(() => Sheet.SetFormat(Sheet.Selection.Regions, new CellFormat() { ForegroundColor = "green" }))">Set font colour to green</button>
+    <button @onclick="@(() => SetBorder(Sheet.Selection.Regions, 2, "black"))">Thick border</button>
+    <button @onclick="@(() => SetBorder(Sheet.Selection.Regions, 1, "black"))">Thin border</button>
+    <button @onclick="@(() => Sheet.Cells.Merge(Sheet.Selection.Regions))">Merge cells</button>
+    <button @onclick="@(SortSelectionDesc)">Sort Desc</button>
+    <button @onclick="@(SortSelectionAsc)">Sort ASc</button>
+    <button @onclick="@(() => Sheet.SetFormat(Sheet.Selection.Regions, new CellFormat() { NumberFormat = "C2" }))">Currency</button>
+</div>
+
+<div>
+    <input id="darkmode-toggle" type="checkbox" @bind="IsDarkMode"/>
+    <label for="darkmode-toggle">Darkmode</label>
+</div>
+
+<div>
+    <input id="show-formula-dependents" type="checkbox" @bind="ShowFormulaDependents"/>
+    <label for="show-formula-dependents">Show formula dependents</label>
+</div>
+
+@code {
+
+    private Sheet Sheet;
+    private string Theme => IsDarkMode ? "dark" : "default";
+    private bool _isDarkMode;
+
+    private bool IsDarkMode
+    {
+        get => _isDarkMode;
+        set
+        {
+            _isDarkMode = value;
+            _datasheet.ForceReRender();
+        }
+    }
+
+    private Datasheet _datasheet;
+
+    private bool _showFormulaDependents;
+
+    private bool ShowFormulaDependents
+    {
+        get => _showFormulaDependents;
+        set
+        {
+            _showFormulaDependents = value;
+            _datasheet.ForceReRender();
+        }
+    }
+
+    private void SortSelectionDesc()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+            return;
+        Sheet.Commands.ExecuteCommand(
+            new SortRangeCommand(Sheet.Selection.ActiveRegion, new ColumnSortOptions(0, false))
+        );
+    }
+
+    private void SortSelectionAsc()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+            return;
+        Sheet.Commands.ExecuteCommand(
+            new SortRangeCommand(Sheet.Selection.ActiveRegion, new ColumnSortOptions(0, true))
+        );
+    }
+
+    private void InsertRowAfterSelection()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+        {
+            return;
+        }
+
+        Sheet.Rows.InsertAt(Sheet.Selection.ActiveRegion.TopLeft.row);
+    }
+
+    private void InsertColAfterSelection()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+        {
+            return;
+        }
+
+        Sheet.Columns.InsertAt(Sheet.Selection.ActiveRegion.TopLeft.col);
+    }
+
+    private void RemoveCol()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+        {
+            return;
+        }
+
+        Sheet.Columns.RemoveAt(Sheet.Selection.ActiveRegion.Left);
+    }
+
+    private void RemoveRow()
+    {
+        if (Sheet.Selection.ActiveRegion == null)
+        {
+            return;
+        }
+
+        Sheet.Rows.RemoveAt(Sheet.Selection.ActiveRegion.Top);
+    }
+
+
+    protected override void OnInitialized()
+    {
+        var src = new SourceValidator(new List<string>()
+        {
+            "Option 1",
+            "Option 2"
+        }, false);
+
+        Sheet = new Sheet(100, 100);
+        Sheet.BatchUpdates();
+        Sheet.Commands.PauseHistory();
+        Sheet.Validators.Add(4, 0, new NumberValidator(true));
+        Sheet.Validators.Add(1, 3, src);
+
+        Sheet.Cells[0, 0].Value = "Blazor datasheet";
+        Sheet.Range("A1:D1")!.Merge();
+        var border = new Border() { Width = 1, Color = "#000000" };
+        Sheet.Range("A1:D1").Format = new CellFormat()
+        {
+            TextAlign = "center",
+            BackgroundColor = "#F5F5F5",
+            BorderBottom = border,
+            BorderRight = border,
+            BorderLeft = border,
+            BorderTop = border,
+            FontWeight = "bold",
+        };
+
+        Sheet.Cells[3, 3].Value = "Date/Time:";
+        Sheet.Cells[3, 4].Type = "datetime";
+        Sheet.Cells[3, 4].Value = DateTime.Now;
+        Sheet.Cells[3, 4].Format = new CellFormat()
+        {
+            NumberFormat = "yyyy-MM-dd"
+        };
+
+        Sheet.Cells[4, 3].Value = "Select:";
+        Sheet.Cells[4, 4].Type = "select";
+        Sheet.Cells[4, 4].Value = src.ValidationSource[0];
+        Sheet.Validators.Add(4, 4, src);
+
+        Sheet.Cells[5, 3].Value = "Bool:";
+        Sheet.Cells[5, 4].Type = "boolean";
+        Sheet.Cells[5, 4].Value = false;
+
+        Sheet.Cells.Merge(new Region(14, 15, 4, 5));
+
+        for (int i = 1; i < 5; i++)
+        {
+            Sheet.Cells[i, 1].Value = i * 2;
+        }
+
+        Sheet.Cells[5, 0].Value = "Sum:";
+        Sheet.Cells[5, 1].Formula = "=SUM(B2:B5)";
+
+        Sheet.SetFormat(new Region(3, 5, 3, 3), new CellFormat() { TextAlign = "right" });
+
+        for (int i = 10; i <= 13; i++)
+        {
+            for (int j = 0; j < 4; j++)
+                Sheet.Cells[i, j].Value = i + j;
+        }
+
+        Sheet.Range("A11:D14").Format = new CellFormat()
+        {
+            BorderBottom = border,
+            BorderLeft = border,
+            BorderRight = border,
+            BorderTop = border
+        };
+        Sheet.ConditionalFormats.Apply(new Region(10, 13, 0, 4), new NumberScaleConditionalFormat(Color.YellowGreen, Color.IndianRed));
+
+        Sheet.Rows.SetHeadings(7, 7, "Custom Row");
+        Sheet.Columns.SetHeadings(5, 5, "Custom Col");
+
+        Sheet.EndBatchUpdates();
+        Sheet.Commands.ResumeHistory();
+    }
+
+    private void SetBorder(IReadOnlyList<IRegion> selectionRegions, int width, string color)
+    {
+        var format = new CellFormat()
+        {
+            BorderBottom = new Border()
+            {
+                Width = width,
+                Color = color
+            },
+            BorderLeft = new Border()
+            {
+                Width = width,
+                Color = color
+            },
+            BorderRight = new Border()
+            {
+                Width = width,
+                Color = color
+            },
+            BorderTop = new Border()
+            {
+                Width = width,
+                Color = color
+            }
+        };
+        Sheet.SetFormat(selectionRegions, format);
+    }
+
+}
