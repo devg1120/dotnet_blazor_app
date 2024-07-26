@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "features/group-points",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "BlazorApexCharts.Docs.Server": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "pie-charts",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:7055;http://localhost:5055",
+      "dotnetRunMessages": "true"
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:46190",
+      "sslPort": 44369
+    }
+  }
+}

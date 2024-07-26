@@ -1,0 +1,9 @@
+
+
+cd samples/BlazorWebAssembly
+
+dotnet run --framework net8.0
+
+
+
+

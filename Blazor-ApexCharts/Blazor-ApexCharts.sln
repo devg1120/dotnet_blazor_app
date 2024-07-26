@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31717.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blazor-ApexCharts", "src\Blazor-ApexCharts\Blazor-ApexCharts.csproj", "{4AE79EC9-B419-430D-A70F-FE9AF8A1A4B3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApexCharts.Docs", "docs\BlazorApexCharts.Docs\BlazorApexCharts.Docs.csproj", "{49430D54-CF3A-4BC5-8DD0-537794757E9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7975A7BE-CE73-49D9-8ED3-FF3585EA21EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApexCharts.Docs.Server", "docs\BlazorApexCharts.Docs.Server\BlazorApexCharts.Docs.Server.csproj", "{BF31D068-076F-48BC-9E68-8C12826114CA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApexCharts.Docs.Wasm", "docs\BlazorApexCharts.Docs.Wasm\BlazorApexCharts.Docs.Wasm.csproj", "{0D192E1C-8DBE-42C0-B025-22249168C66D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AE79EC9-B419-430D-A70F-FE9AF8A1A4B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE79EC9-B419-430D-A70F-FE9AF8A1A4B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE79EC9-B419-430D-A70F-FE9AF8A1A4B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE79EC9-B419-430D-A70F-FE9AF8A1A4B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49430D54-CF3A-4BC5-8DD0-537794757E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49430D54-CF3A-4BC5-8DD0-537794757E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49430D54-CF3A-4BC5-8DD0-537794757E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49430D54-CF3A-4BC5-8DD0-537794757E9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF31D068-076F-48BC-9E68-8C12826114CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF31D068-076F-48BC-9E68-8C12826114CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF31D068-076F-48BC-9E68-8C12826114CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF31D068-076F-48BC-9E68-8C12826114CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D192E1C-8DBE-42C0-B025-22249168C66D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D192E1C-8DBE-42C0-B025-22249168C66D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D192E1C-8DBE-42C0-B025-22249168C66D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D192E1C-8DBE-42C0-B025-22249168C66D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{49430D54-CF3A-4BC5-8DD0-537794757E9B} = {7975A7BE-CE73-49D9-8ED3-FF3585EA21EE}
+		{BF31D068-076F-48BC-9E68-8C12826114CA} = {7975A7BE-CE73-49D9-8ED3-FF3585EA21EE}
+		{0D192E1C-8DBE-42C0-B025-22249168C66D} = {7975A7BE-CE73-49D9-8ED3-FF3585EA21EE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C7AB450-7E79-495C-BEA4-60D6DC9482FC}
+	EndGlobalSection
+EndGlobal
