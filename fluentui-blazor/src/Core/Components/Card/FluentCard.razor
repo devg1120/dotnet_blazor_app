@@ -1,0 +1,23 @@
+﻿@namespace Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+@if (MinimalStyle)
+{
+    <div @ref=Element
+         id="@Id"
+         class="@ClassValue"
+         style="@StyleValue"
+         @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
+else
+{
+    <fluent-card @ref=Element
+                 id="@Id"
+                 class="@ClassValue"
+                 style="@StyleValue"
+                 @attributes="AdditionalAttributes">
+        @ChildContent
+    </fluent-card>
+}

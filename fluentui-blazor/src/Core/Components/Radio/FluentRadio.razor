@@ -1,0 +1,20 @@
+@namespace Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+@typeparam TValue
+<fluent-radio @ref=Element
+              class="@Class"
+              style="@Style"
+              readonly="@ReadOnly"
+              id=@Id
+              disabled="@Disabled"
+              name=@Context!.GroupName
+              required="@Required"
+              aria-label="@(string.IsNullOrEmpty(AriaLabel) ? Label : AriaLabel)"
+              checked="@Context.CurrentValue?.Equals(Value)"
+              current-value="@BindConverter.FormatValue(Value?.ToString())"
+              @attributes="AdditionalAttributes">
+    @Label
+    @LabelTemplate
+    @ChildContent
+</fluent-radio>
+

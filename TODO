@@ -1,0 +1,47 @@
+
+Blazor  Component lib
+
+https://github.com/AdrienTorris/awesome-blazor
+
+https://qiita.com/aki426/items/68c429aef11603389f74
+
+##################################
+[ Radzen Blazor Components ]
+https://blazor.radzen.com/
+https://github.com/radzenhq/radzen-blazor
+
+
+* dotnet_blazor_app/radzen-blazor
+
+ cd RadzenBlazorDemos.Server
+ dotnet run
+ https://127.0.0.1:7055/
+
+
+* app source
+# spliter
+
+RadzenBlazorDemos/Pages/
+                         SplitterPage.razor
+                         SplitterConfig.razor 
+
+##################################
+[ MudBlazor ]
+https://github.com/MudBlazor/MudBlazor
+
+
+* dotnet_blazor_app/MudBlazor
+
+ cd MudBlazor.Docs.Server
+ dotnet run
+ https://127.0.0.1:7055/
+
+
+##################################
+[ fluentui-blazor ]
+https://github.com/microsoft/fluentui-blazor
+
+ cd fluentui-blazor/examples/Demo/Server
+ dotnet run
+ https://127.0.0.1:7055/
+

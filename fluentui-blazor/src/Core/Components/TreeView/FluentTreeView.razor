@@ -1,0 +1,23 @@
+﻿@namespace Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+@{
+#pragma warning disable CS0618 // Disable CS0618 warning for obsolete "RenderCollapsedNodes"
+}
+<CascadingValue Value="this" IsFixed="true">
+    <fluent-tree-view @ref=Element
+                      class="@Class"
+                      style="@Style"
+                      render-collapsed-nodes="@RenderCollapsedNodes"
+                      @onselectedchange="@HandleCurrentSelectedChangeAsync"
+                      @attributes="AdditionalAttributes">
+        @ChildContent
+
+        @if (Items != null)
+        {
+            foreach (var item in Items)
+            {
+                @FluentTreeItem.GetFluentTreeItem(this, item)
+            }
+        }
+    </fluent-tree-view>
+</CascadingValue>

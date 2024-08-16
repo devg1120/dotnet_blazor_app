@@ -1,0 +1,20 @@
+﻿@namespace Microsoft.FluentUI.AspNetCore.Components
+@inherits FluentComponentBase
+
+@typeparam TItem
+<div draggable=@(Draggable ? "true" : null)
+     id=@Id
+     class=@ClassValue
+     style=@StyleValue
+     dragged-over=@IsOver
+     @ondragstart=@OnDragStartHandler
+     @ondragover=@OnDragOverHandler
+     @ondragover:preventDefault="@Droppable"
+     @ondragenter=@OnDragEnterHandler
+     @ondragenter:preventDefault="@Droppable"
+     @ondragleave=@OnDragLeaveHandler
+     @ondragleave:preventDefault="@Droppable"
+     @ondragend=@OnDragEndHandler
+     @ondrop=@OnDropHandler @ondrop:preventDefault>
+    @ChildContent
+</div>

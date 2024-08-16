@@ -1,0 +1,20 @@
+﻿@namespace MudBlazor.UnitTests.TestComponents
+
+<MudRadioGroup @bind-Value="@option">
+    <MudRadio Value="@("1")" />
+    <MudRadio Value="@("2")" />
+    <MudRadio Value="@("3")" />
+</MudRadioGroup>
+
+<MudButton OnClick="OnClick" />
+
+@code {
+    public static string __description__ = "RadioGroup should be resettable";
+
+    string option;
+
+    private void OnClick()
+    {
+        option = null;
+    }
+}

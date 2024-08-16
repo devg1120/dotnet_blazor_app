@@ -1,0 +1,71 @@
+﻿@namespace Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Rendering;
+@inherits FluentComponentBase
+
+@CustomStyle
+
+@if (LoadingOverlay)
+{
+    <span class="@($"{Class} loading-button")" style="@Style">
+        @_renderButton
+        <FluentProgressRing />
+    </span>
+}
+else
+{
+    @_renderButton
+}
+
+@code{
+    protected void RenderButton(RenderTreeBuilder __builder)
+    {
+        <fluent-button @ref=Element
+               class="@(LoadingOverlay ? string.Empty : Class)"
+               style="@(LoadingOverlay ? "width: 100%;" : Style)"
+               autofocus=@Autofocus
+               form=@FormId
+               formaction=@Action
+               formenctype=@Enctype
+               formmethod=@Method
+               formnovalidate=@NoValidate
+               formtarget=@Target
+               type=@Type.ToAttributeValue()
+               id=@Id
+               value=@Value
+               current-value=@CurrentValue
+               disabled=@(Disabled || Loading)
+               name=@Name
+               required=@Required
+               aria-label=@Title
+               title=@Title
+               appearance=@Appearance.ToAttributeValue()
+               @onclick="@OnClickHandlerAsync"
+               @attributes="AdditionalAttributes">
+            @if (IconStart != null)
+            {
+                if (Loading)
+                {
+                    <FluentProgressRing slot="@(ChildContent != null ? "start" : null)" Style="@RingStyle(IconStart)" />
+                }
+                else
+                {
+                    <FluentIcon Value="@(IconStart.InverseColor(Appearance == AspNetCore.Components.Appearance.Accent))"
+                                Slot="@(ChildContent != null ? "start" : null)" />
+                }
+            }
+            @ChildContent
+            @if (IconEnd != null)
+            {
+                if (Loading && IconStart == null)
+                {
+                    <FluentProgressRing slot="@(ChildContent != null ? "end" : null)" Style="@RingStyle(IconEnd)" />
+                }
+                else
+                {
+                    <FluentIcon Value="@(IconEnd.InverseColor(Appearance == AspNetCore.Components.Appearance.Accent))"
+                                Slot="@(ChildContent != null ? "end" : null)" />
+                }
+            }
+        </fluent-button>
+    }
+}

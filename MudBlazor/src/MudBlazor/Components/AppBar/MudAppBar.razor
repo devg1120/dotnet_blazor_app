@@ -1,0 +1,18 @@
+@namespace MudBlazor
+@inherits MudComponentBase
+@if (Bottom)
+{
+<footer @attributes="UserAttributes" class="@Classname" style="@Style">
+    <MudToolBar Dense="@Dense" Gutters="@Gutters" Class="@ToolBarClassname" WrapContent="@WrapContent">
+        @ChildContent
+    </MudToolBar>
+</footer>
+}
+else
+{
+<header @attributes="UserAttributes" class="@Classname" style="@Style">
+    <MudToolBar Dense="@Dense" Gutters="@Gutters" Class="@ToolBarClassname" WrapContent="@WrapContent">
+        @ChildContent
+    </MudToolBar>
+</header>
+}
